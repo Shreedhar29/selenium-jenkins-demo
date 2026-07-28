@@ -1,10 +1,6 @@
 pipeline {
-    agent any
 
-    tools {
-        maven 'maven-3'
-        jdk 'jdk-21'
-    }
+    agent any
 
     stages {
 
@@ -15,25 +11,28 @@ pipeline {
             }
         }
 
-        stage('Build & Test') {
+        stage('Build') {
             steps {
-                echo 'Running Maven Tests...'
-                sh 'mvn clean test'
-            }
-            post {
-                always {
-                    echo 'Archiving test reports...'
-                    archiveArtifacts artifacts: 'target/cucumber-reports/**/*', fingerprint: true
-                    junit allowEmptyResults: true, testResults: 'target/surefire-reports/*.xml'
-                }
+                echo 'Compiling project...'
+                sh 'mvn clean compile'
             }
         }
+
+        stage('Run Tests') {
+            steps {
+                echo 'Running Selenium tests...'
+                sh 'mvn test'
+            }
+        }
+
     }
 
     post {
+
         always {
-            echo 'Pipeline Finished'
-            cleanWs()
+            junit 'target/surefire-reports/*.xml'
+
+            archiveArtifacts artifacts: 'target/**/*', fingerprint: true
         }
 
         success {
