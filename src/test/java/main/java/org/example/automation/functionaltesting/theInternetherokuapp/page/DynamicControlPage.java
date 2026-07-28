@@ -7,7 +7,6 @@ import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.FindBy;
 import org.openqa.selenium.support.PageFactory;
 import org.openqa.selenium.support.ui.ExpectedConditions;
-import org.testng.Assert;
 
 public class DynamicControlPage extends PageBase {
 
@@ -37,34 +36,41 @@ public class DynamicControlPage extends PageBase {
         PageFactory.initElements(driver, this);
     }
 
-    public boolean dynamicControlFlow() {
+    public void clickDynamicControls() {
+        wait.until(ExpectedConditions.visibilityOf(dynamicControlsButton)).click();
+    }
 
-       wait.until(ExpectedConditions.visibilityOf(dynamicControlsButton)).click();
-
-        // Remove checkbox
+    public void removeCheckbox() {
         removeButton.click();
         wait.until(ExpectedConditions.textToBePresentInElement(goneMsg, "It's gone!"));
-        Assert.assertEquals(goneMsg.getText(), "It's gone!");
+    }
 
-        // Add checkbox
+    public String getGoneMessage() {
+        return goneMsg.getText();
+    }
+
+    public void addCheckboxBack() {
         removeButton.click();
         By checkbox = By.cssSelector(".example #checkbox");
         wait.until(ExpectedConditions.visibilityOfElementLocated(checkbox));
-        Assert.assertTrue( wait.until(ExpectedConditions.visibilityOfElementLocated(checkbox)).isDisplayed());
-
-//
-//        // Enable textbox
-        JSutils.scrollIntoView(enableButton, driver);
-        enableButton.click();
-
-        wait.until(ExpectedConditions.elementToBeClickable(inputBox));
-        inputBox.sendKeys("Selenium Practice");
-//
-        // Disable textbox
-        enableButton.click();
-        wait.until(driver -> !inputBox.isEnabled());
-        return inputBox.isEnabled();
     }
 
+    public boolean isCheckboxDisplayed() {
+        By checkbox = By.cssSelector(".example #checkbox");
+        return wait.until(ExpectedConditions.visibilityOfElementLocated(checkbox)).isDisplayed();
+    }
+
+    public void enableInputAndType() {
+        JSutils.scrollIntoView(enableButton, driver);
+        enableButton.click();
+        wait.until(ExpectedConditions.elementToBeClickable(inputBox));
+        inputBox.sendKeys("Selenium Practice");
+    }
+
+    public boolean disableInput() {
+        enableButton.click();
+        wait.until(d -> !inputBox.isEnabled());
+        return inputBox.isEnabled();
+    }
 
 }

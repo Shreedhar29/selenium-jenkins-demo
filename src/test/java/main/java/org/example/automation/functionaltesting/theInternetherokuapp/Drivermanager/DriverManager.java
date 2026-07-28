@@ -43,10 +43,7 @@ public class DriverManager {
     }
     public static WebDriver getDriver(){
         if(tDriver.get()==null){ initDriver();
-        }System.out.println("Created Driver : "
-                + tDriver.get().hashCode()
-                + " Thread : "
-                + Thread.currentThread().getId());
+        }
         return  tDriver.get();
     }
     public static void quitDriver(){

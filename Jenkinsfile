@@ -1,6 +1,11 @@
 pipeline {
     agent any
 
+    tools {
+        maven 'maven-3'
+        jdk 'jdk-21'
+    }
+
     stages {
 
         stage('Checkout') {
@@ -15,12 +20,20 @@ pipeline {
                 echo 'Running Maven Tests...'
                 sh 'mvn clean test'
             }
+            post {
+                always {
+                    echo 'Archiving test reports...'
+                    archiveArtifacts artifacts: 'target/cucumber-reports/**/*', fingerprint: true
+                    junit allowEmptyResults: true, testResults: 'target/surefire-reports/*.xml'
+                }
+            }
         }
     }
 
     post {
         always {
             echo 'Pipeline Finished'
+            cleanWs()
         }
 
         success {

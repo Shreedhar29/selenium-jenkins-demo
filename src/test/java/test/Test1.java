@@ -21,6 +21,10 @@ public class Test1 extends Base {
     @Test(groups = "smoke")
     public void test2() throws InterruptedException {
         DynamicControlPage dynamicControlPage = new DynamicControlPage(DriverManager.getDriver());
-        Assert.assertFalse(dynamicControlPage.dynamicControlFlow());
+        dynamicControlPage.clickDynamicControls();
+        dynamicControlPage.removeCheckbox();
+        dynamicControlPage.addCheckboxBack();
+        dynamicControlPage.enableInputAndType();
+        Assert.assertFalse(dynamicControlPage.disableInput());
     }
 }
