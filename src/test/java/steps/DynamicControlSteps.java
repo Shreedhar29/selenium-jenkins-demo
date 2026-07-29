@@ -17,6 +17,7 @@ public class DynamicControlSteps {
         DriverManager.getDriver().get(Config.readProperty("baseurl"));
         dynamicControlPage = new DynamicControlPage(DriverManager.getDriver());
         dynamicControlPage.clickDynamicControls();
+        System.out.println("HAha a this code is updated *&^%$#@#$%^&*()(*&^%$#@#$%^&*()(*&^%$#$%^&*()(*&^%$#");
     }
 
     @When("I remove the checkbox")
