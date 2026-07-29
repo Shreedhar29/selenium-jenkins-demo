@@ -2,24 +2,29 @@ pipeline {
 
     agent any
 
-//
-    parameters{
+    options {
+        timestamps()
+        disableConcurrentBuilds()
+    }
+
+    parameters {
+
         choice(
-          name: 'BROWSER',
-          choices: ['chrome','firefox'],
-          description: 'Select Browser'
+            name: 'BROWSER',
+            choices: ['chrome', 'firefox', 'both'],
+            description: 'Select browser'
         )
 
         choice(
-        name: 'HEADLESS',
-        choices: ['true','false'],
-        description: 'Select Browser Type'
+            name: 'HEADLESS',
+            choices: ['true', 'false'],
+            description: 'Run browser in headless mode'
         )
 
-        choice(
-          name: "BASE_URL",
-          choices: 'https://the-internet.herokuapp.com/',
-          description: 'Application URL'
+        string(
+            name: 'BASE_URL',
+            defaultValue: 'https://the-internet.herokuapp.com/',
+            description: 'Application URL'
         )
     }
 
@@ -34,13 +39,12 @@ pipeline {
 
         stage('Verify Environment') {
             steps {
-                echo "========== VERIFY TOOLS =========="
-
                 sh 'pwd'
                 sh 'ls -la'
                 sh 'java -version'
                 sh 'mvn -version'
                 sh 'google-chrome --version || true'
+                sh 'firefox --version || true'
             }
         }
 
@@ -51,19 +55,51 @@ pipeline {
             }
         }
 
-        stage('Run Selenium Tests') {
-            steps {
-                echo "========== RUNNING TESTS =========="
-                sh """
-                  mvn test \
-                  -Dbrowser=${params.BROWSER}\
-                  -Dheadless=${params.HEADLESS}\
-                  -Dbaseurl=${params.BASE_URL}
+        stage('Run Tests') {
 
-              """
+            parallel {
+
+                stage('Chrome Tests') {
+                    when {
+                        anyOf {
+                            expression { params.BROWSER == 'chrome' }
+                            expression { params.BROWSER == 'both' }
+                        }
+                    }
+
+                    steps {
+                        echo "Running Chrome Tests..."
+
+                        sh """
+                        mvn test \
+                        -Dbrowser=chrome \
+                        -Dheadless=${params.HEADLESS} \
+                        -Dbaseurl=${params.BASE_URL}
+                        """
+                    }
+                }
+
+                stage('Firefox Tests') {
+                    when {
+                        anyOf {
+                            expression { params.BROWSER == 'firefox' }
+                            expression { params.BROWSER == 'both' }
+                        }
+                    }
+
+                    steps {
+                        echo "Running Firefox Tests..."
+
+                        sh """
+                        mvn test \
+                        -Dbrowser=firefox \
+                        -Dheadless=${params.HEADLESS} \
+                        -Dbaseurl=${params.BASE_URL}
+                        """
+                    }
+                }
             }
         }
-
     }
 
     post {
@@ -75,8 +111,10 @@ pipeline {
             junit allowEmptyResults: true,
                   testResults: 'target/surefire-reports/**/*.xml'
 
-            archiveArtifacts artifacts: 'target/**/*',
-                             fingerprint: true
+            archiveArtifacts(
+                artifacts: 'target/**/*',
+                fingerprint: true
+            )
 
             cleanWs()
         }
