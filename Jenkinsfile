@@ -2,13 +2,25 @@ pipeline {
 
     agent any
 
-//     tools {
-//         jdk 'jdk-21'
-//         maven 'maven-3'
-//     }
+//
+    parameters{
+        choice(
+          name: 'BROWSER',
+          choices: ['chrome','firefox'],
+          description: 'Select Browser'
+        )
 
-    options {
-        timestamps()
+        choice(
+        name: 'HEADLESS',
+        choices: ['true','false'],
+        description: 'Select Browser Type'
+        )
+
+        choice(
+          name: "BASE_URL",
+          choices: 'https://the-internet.herokuapp.com/',
+          description: 'Application URL'
+        )
     }
 
     stages {
@@ -42,7 +54,13 @@ pipeline {
         stage('Run Selenium Tests') {
             steps {
                 echo "========== RUNNING TESTS =========="
-                sh 'mvn test'
+                sh """
+                  mvn test \
+                  -Dbrowser=${params.BROWSER}\
+                  -Dheadless=${params.HEADLESS}\
+                  -Dbaseurl=${params.BASE_URL}
+
+              """
             }
         }
 
