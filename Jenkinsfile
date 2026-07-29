@@ -2,10 +2,10 @@ pipeline {
 
     agent any
 
-    tools {
-        jdk 'jdk-21'
-        maven 'maven-3'
-    }
+//     tools {
+//         jdk 'jdk-21'
+//         maven 'maven-3'
+//     }
 
     options {
         timestamps()
