@@ -13,7 +13,12 @@ public class DriverManager {
 
     public static void initDriver(){
         if(tDriver.get()==null){
-              switch (Config.readProperty("browser")){
+            String browser = System.getProperty("browser");
+
+            if (browser == null || browser.isBlank()) {
+                browser = Config.readProperty("browser");
+            }
+              switch (browser.toLowerCase()) {
                   case "chrome"-> {
 
                       ChromeOptions options = new ChromeOptions();
