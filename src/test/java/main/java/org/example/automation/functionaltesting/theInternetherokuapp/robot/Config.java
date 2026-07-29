@@ -18,16 +18,12 @@ public class Config {
 
     public static String readProperty(String key) {
 
-        if (key == null || key.trim().isEmpty()) {
-            throw new IllegalArgumentException("Key cannot be null or empty");
+        String value = System.getProperty(key);
+
+        if (value != null && !value.isBlank()) {
+            return value;
         }
 
-        String value = prop.getProperty(key);
-
-        if (value == null) {
-            throw new IllegalArgumentException("Property not found: " + key);
-        }
-
-        return value;
+        return prop.getProperty(key);
     }
 }
