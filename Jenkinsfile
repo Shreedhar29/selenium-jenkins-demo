@@ -107,16 +107,14 @@ pipeline {
         always {
 
             echo "========== PUBLISH REPORTS =========="
-
-            junit allowEmptyResults: true,
-                  testResults: 'target/surefire-reports/**/*.xml'
-
-            archiveArtifacts(
-                artifacts: 'target/**/*',
-                fingerprint: true
-            )
-
-            cleanWs()
+publishHTML(target: [
+    reportDir: 'target/extent-report',
+    reportFiles: 'ExtentReport.html',
+    reportName: 'Extent Report',
+    keepAll: true,
+    alwaysLinkToLastBuild: true,
+    allowMissing: false
+])
         }
 
         success {
