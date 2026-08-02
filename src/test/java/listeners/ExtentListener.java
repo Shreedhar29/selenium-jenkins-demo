@@ -6,6 +6,7 @@ import org.testng.ITestContext;
 import org.testng.ITestListener;
 import org.testng.ITestResult;
 import reports.ExtentManager;
+import utils.ScreenshotUtil;
 
 public class ExtentListener implements ITestListener {
 
@@ -29,8 +30,23 @@ public class ExtentListener implements ITestListener {
 
     @Override
     public void onTestFailure(ITestResult result) {
+        String screenshot =
+                ScreenshotUtil.captureScreenshot(result.getMethod().getMethodName());
 
         test.get().fail(result.getThrowable());
+
+        if (screenshot != null) {
+
+            try {
+
+                test.get().addScreenCaptureFromPath(screenshot);
+
+            } catch (Exception e) {
+
+                e.printStackTrace();
+
+            }
+        }
     }
 
     @Override

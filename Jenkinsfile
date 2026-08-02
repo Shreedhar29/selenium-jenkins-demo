@@ -107,14 +107,10 @@ pipeline {
         always {
 
             echo "========== PUBLISH REPORTS =========="
-publishHTML(target: [
-    reportDir: 'target/extent-report',
-    reportFiles: 'ExtentReport.html',
-    reportName: 'Extent Report',
-    keepAll: true,
-    alwaysLinkToLastBuild: true,
-    allowMissing: false
-])
+archiveArtifacts artifacts: '''
+target/screenshots/**/*,
+target/extent-report/**/*
+''', fingerprint: true
         }
 
         success {
